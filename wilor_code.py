@@ -9,7 +9,7 @@ from wilor.utils import recursive_to
 from wilor.datasets.vitdet_dataset import ViTDetDataset, DEFAULT_MEAN, DEFAULT_STD
 from wilor.utils.renderer import Renderer, cam_crop_to_full
 from ultralytics import YOLO
-
+from tqdm import tqdm
 LIGHT_PURPLE = (0.25098039, 0.274117647, 0.65882353)
 
 
@@ -46,10 +46,11 @@ def predict_on_folder(input_folder="input", output_folder="output", focal_length
     # Get all demo images ends with .jpg or .png
     img_paths = sorted([img for end in args["file_type"] for img in Path(args["img_folder"]).glob(end)])
     # Iterate over all images in folder
-    for img_path in img_paths:
-        print(f"working on {img_path}")
+    pbar = tqdm(img_paths)
+    for img_path in pbar:
+        pbar.set_postfix(img_path=Path(img_path).stem)
         img_cv2 = cv2.imread(str(img_path))
-        detections = detector(source=img_path,save=False, conf=0.4, device=[0])[0]
+        detections = detector(source=img_path,save=False, conf=0.4, device=[0], verbose=False)[0]
         bboxes = []
         is_right = []
         for det in detections:
