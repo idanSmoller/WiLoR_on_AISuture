@@ -24,8 +24,6 @@ if __name__ == "__main__":
         print(f"Starting to process {name}")
 
         if not is_logged(FINISHED_EXTRACTING_MSG.format(name)):
-            start_time = time()
-
             print("Extracting frames...")
             processor.extract_frames(os.path.join(INPUT_DIR, video),
                            os.path.join(FRAMES_DIR, name),
@@ -33,24 +31,14 @@ if __name__ == "__main__":
                            frame_limit=FRAME_LIMIT)
             write_into_log(FINISHED_EXTRACTING_MSG.format(name))
 
-            end_time = time()
-            print(f"Extracting took {end_time - start_time} seconds")
-
         if not is_logged(FINISHED_PREDICTING_MSG.format(name)):
-            start_time = time()
-
             print("Calling WiLoR...")
             wilor_code.predict_on_folder(input_folder=os.path.join(FRAMES_DIR, name),
                               output_folder=os.path.join(OBJECTS_DIR, name),
                               focal_length=FOCAL_LENGTH)
             write_into_log(FINISHED_PREDICTING_MSG.format(name))
 
-            end_time = time()
-            print(f"Predicting took {end_time - start_time} seconds")
-
         if not is_logged(FINISHED_PROCESSING_MSG.format(name)):
-            start_time = time()
-
             print("Saving location tensor...")
             processor.build_location_tensor(os.path.join(OBJECTS_DIR, name),
                                   LOCATION_DIR, name)
@@ -63,9 +51,6 @@ if __name__ == "__main__":
             processor.build_video_motion_tensor(os.path.join(MOVEMENT_DIR, name),
                                       MOTION_DIR, name)
             write_into_log(FINISHED_PROCESSING_MSG.format(name))
-
-            end_time = time()
-            print(f"Extracting took {end_time - start_time} seconds")
 
         print(f"Done with {name}")
         if name in KEEP_ALL:

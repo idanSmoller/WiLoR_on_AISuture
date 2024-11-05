@@ -9,6 +9,8 @@ from tqdm import tqdm, trange
 
 INPUT_DIR = "/strg/E/shared-data/AIxSuture"
 OUTPUT_DIR = "/strg/E/shared-data/AIxSuture_wilor_output"
+# INPUT_DIR = "../rps_input"
+# OUTPUT_DIR = "../rps_output"
 FRAMES_DIR = OUTPUT_DIR + "/frames"
 OBJECTS_DIR = OUTPUT_DIR + "/objects"
 MOVEMENT_DIR = OUTPUT_DIR + "/movement"

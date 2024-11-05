@@ -73,10 +73,13 @@ def build_location_tensor(source_folder, output_directory, name):
                 filled_in = False
 
                 while not filled_in:
-                    if hand_index in frames[sorted_frames[i + k]]:
+                    if i + k >= len(sorted_frames) and i - k < 0:
+                        raise(Exception(f"the {'right' if hand_index == 0 else 'left'} hand is never detected!"))
+
+                    if i + k < len(sorted_frames) and hand_index in frames[sorted_frames[i + k]]:
                         vertices = load_obj_file(frames[sorted_frames[i + k]][hand_index])
                         filled_in = True
-                    if hand_index in frames[sorted_frames[i - k]]:
+                    if i - k >= 0 and hand_index in frames[sorted_frames[i - k]]:
                         vertices = load_obj_file(frames[sorted_frames[i - k]][hand_index])
                         filled_in = True
 

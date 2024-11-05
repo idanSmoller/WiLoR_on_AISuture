@@ -50,7 +50,7 @@ def predict_on_folder(input_folder="input", output_folder="output", focal_length
     for img_path in pbar:
         pbar.set_postfix(img_path=Path(img_path).stem)
         img_cv2 = cv2.imread(str(img_path))
-        detections = detector(source=img_path,save=False, conf=0.4, device=[0], verbose=False)[0]
+        detections = detector(source=img_path,save=False, conf=0.65, device=[0], verbose=False)[0]
         bboxes = []
         is_right = []
         for det in detections:
