@@ -73,3 +73,4 @@ if __name__ == "__main__":
                              os.path.join(COMBINATION_DIR, name))
         os.system(f"rm -r {os.path.join(FRAMES_DIR, name)}")
         os.system(f"rm -r {os.path.join(OBJECTS_DIR, name)}")
+        os.system(f"rm -r {os.path.join(MOVEMENT_DIR, name)}")

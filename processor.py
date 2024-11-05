@@ -8,9 +8,10 @@ def extract_frames(video_path, output_directory, fps, frame_limit):
 
     # Load the video clip
     clip = VideoFileClip(video_path)
+    num_of_frames = int(clip.duration * clip.fps)
 
     # Iterate over each frame and save it as an image
-    for i, frame in enumerate(clip.iter_frames(fps=fps), start=1):
+    for i, frame in enumerate(tqdm(clip.iter_frames(fps=fps), total=num_of_frames), start=1):
         if frame_limit and i > frame_limit:
             break
         # Construct the file name for the frame
@@ -61,7 +62,7 @@ def build_location_tensor(source_folder, output_directory, name):
 
     location_tensor = []
     # Calculate vectors for consecutive frames
-    for i in range(len(sorted_frames)):
+    for i in trange(len(sorted_frames)):
         # Process right hand first (index '1'), then left hand (index '0')
         vectors = []
         for hand_index in ['1', '0']:
@@ -114,7 +115,7 @@ def calculate_movement_vectors(source_folder, output_directory):
     sorted_frames = sorted(frames.keys())
 
     # Calculate vectors for consecutive frames
-    for i in range(len(sorted_frames) - 1):
+    for i in trange(len(sorted_frames) - 1):
 
         # Process right hand first (index '1'), then left hand (index '0')
         vectors = []
@@ -169,7 +170,7 @@ def build_video_motion_tensor(movement_path, output_directory, name):
         os.makedirs(output_directory)
 
     frames = []
-    for file_name in os.listdir(movement_path):
+    for file_name in tqdm(os.listdir(movement_path)):
         if file_name.endswith('.txt'):
             file_path = os.path.join(movement_path, file_name)
             with open(file_path, 'r') as file:
