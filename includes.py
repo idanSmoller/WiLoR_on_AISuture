@@ -18,10 +18,15 @@ MOTION_DIR = OUTPUT_DIR + "/motion"
 LOCATION_DIR = OUTPUT_DIR + "/location"
 COMBINATION_DIR = OUTPUT_DIR + "/combined_frames"
 LOGGER_PATH = "progress_log.txt"
+HAND_FACES_PATH = "hand_faces.txt"
 
-FINISHED_EXTRACTING_MSG = "Finished extracting frames for {}"
-FINISHED_PREDICTING_MSG = "Finished running the model on {}'s frames"
-FINISHED_PROCESSING_MSG = "Finished processing {} into motion and location"
+RIGHT = 0
+LEFT = 1
+NUM_OF_VERTICES = 778
+
+FINISHED_EXTRACTING_MSG = "Finished extracting frames for {}\n"
+FINISHED_PREDICTING_MSG = "Finished running the model on {}'s frames\n"
+FINISHED_PROCESSING_MSG = "Finished processing {} into motion and location\n"
 
 FPS = 30
 FRAME_LIMIT = None
