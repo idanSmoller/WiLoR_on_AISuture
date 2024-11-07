@@ -9,15 +9,15 @@ def read_obj(file_path):
         with open(file_path, 'r') as file:
             for line in file:
                 if line.startswith('v '):
-                    vertices.append([float(x) for x in line.split()])
+                    vertices.append([float(x) for x in line.split()[1:]])
                 elif line.startswith('f '):
-                    faces.append([float(x) for x in line.split()])
+                    faces.append([float(x) for x in line.split()[1:]])
     return vertices, faces
 
 
 def write_obj(output_file, vertices, faces):
     with open(output_file, "w") as file:
         for v in vertices:
-            file.write(f"v {str(v[0])} {str(v[1])} {str(v[2])}")
+            file.write(f"v {str(v[0])} {str(v[1])} {str(v[2])}\n")
         for f in faces:
-            file.write(f"f {str(f[0])} {str(f[1])} {str(f[2])}")
+            file.write(f"f {str(f[0])} {str(f[1])} {str(f[2])}\n")

@@ -38,18 +38,15 @@ def load_obj_file(file_path):
 
 
 def reconstruct_hands(location_tensor_path, output_folder):
-    with open(HAND_FACES_PATH) as file:
-        faces = file.readlines()
-    faces_right = [face.split() for face in faces]
-    faces_left = [[x[0], x[2], x[1]] for x in faces_right]
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    _, faces = obj_helper.read_obj(HAND_FACES_PATH)
 
     location_tensor = np.load(location_tensor_path)
     for i, location_vec in enumerate(tqdm(location_tensor)):
-        vertices_right = location_vec[:NUM_OF_VERTICES]
-        vertices_left = location_vec[NUM_OF_VERTICES:]
+        obj_helper.write_obj(os.path.join(output_folder, f"frame-{i:04}.obj"), location_vec, faces)
 
-        obj_helper.write_obj(os.path.join(output_folder, f"frame-{i:04}_{RIGHT}"), vertices_right, faces_right)
-        obj_helper.write_obj(os.path.join(output_folder, f"frame-{i:04}_{LEFT}"), vertices_left, faces_left)
 
 
 def build_location_tensor(source_folder, output_folder, name):
@@ -75,13 +72,11 @@ def build_location_tensor(source_folder, output_folder, name):
 
     # Sort frame numbers
     sorted_frames = sorted(frames.keys())
-
     location_tensor = []
     # Calculate vectors for consecutive frames
     for i in trange(len(sorted_frames)):
-        # Process right hand first (index '1'), then left hand (index '0')
         vectors = []
-        for hand_index in ['1', '0']:
+        for hand_index in [str(RIGHT), str(LEFT)]:
             if hand_index in frames[sorted_frames[i]]:
                 vertices = load_obj_file(frames[sorted_frames[i]][hand_index])
             else:
@@ -124,6 +119,7 @@ def calculate_movement_vectors(source_folder, output_folder):
 
         # Skip faulty frames
         if any(f"frame-{frame_number}_2" in f for f in files):
+            print("3 hands detected in one frame!")
             continue
 
         if frame_number not in frames:
@@ -136,9 +132,8 @@ def calculate_movement_vectors(source_folder, output_folder):
     # Calculate vectors for consecutive frames
     for i in trange(len(sorted_frames) - 1):
 
-        # Process right hand first (index '1'), then left hand (index '0')
         vectors = []
-        for hand_index in ['1', '0']:
+        for hand_index in [str(RIGHT), str(LEFT)]:
             if hand_index in frames[sorted_frames[i]]:
                 vertices_frame1 = load_obj_file(frames[sorted_frames[i]][hand_index])
             else:
@@ -146,10 +141,13 @@ def calculate_movement_vectors(source_folder, output_folder):
                 filled_in = False
 
                 while not filled_in:
-                    if hand_index in frames[sorted_frames[i + k]]:
+                    if i + k >= len(sorted_frames) and i - k < 0:
+                        raise (Exception(f"the {'right' if hand_index == 0 else 'left'} hand is never detected!"))
+
+                    if i + k < len(sorted_frames) and hand_index in frames[sorted_frames[i + k]]:
                         vertices_frame1 = load_obj_file(frames[sorted_frames[i + k]][hand_index])
                         filled_in = True
-                    if hand_index in frames[sorted_frames[i - k]]:
+                    if i - k >= 0 and hand_index in frames[sorted_frames[i - k]]:
                         vertices_frame1 = load_obj_file(frames[sorted_frames[i - k]][hand_index])
                         filled_in = True
 
@@ -162,10 +160,13 @@ def calculate_movement_vectors(source_folder, output_folder):
                 filled_in = False
 
                 while not filled_in:
-                    if hand_index in frames[sorted_frames[i + 1 + k]]:
+                    if i + 1 + k >= len(sorted_frames) and i + 1 - k < 0:
+                        raise (Exception(f"the {'right' if hand_index == 0 else 'left'} hand is never detected!"))
+
+                    if i + 1 + k < len(sorted_frames) and hand_index in frames[sorted_frames[i + 1 + k]]:
                         vertices_frame2 = load_obj_file(frames[sorted_frames[i + 1 + k]][hand_index])
                         filled_in = True
-                    if hand_index in frames[sorted_frames[i + 1 - k]]:
+                    if i + 1 - k >= 0 and hand_index in frames[sorted_frames[i + 1 - k]]:
                         vertices_frame2 = load_obj_file(frames[sorted_frames[i + 1 - k]][hand_index])
                         filled_in = True
 
