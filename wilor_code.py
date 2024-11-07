@@ -32,7 +32,6 @@ def predict_on_folder(input_folder="input", output_folder="output", focal_length
         model_cfg.EXTRA.FOCAL_LENGTH = args["focal_length"]
 
     detector = YOLO("/strg/E/shared-data/AIxSuture.Tools_n_Hands.yolov8/train4-R_L-Hands/weights/best.pt")
-    their_detector = YOLO('./pretrained_models/detector.pt')
 
     # Setup the renderer
     renderer = Renderer(model_cfg, faces=model.mano.faces)
@@ -59,14 +58,6 @@ def predict_on_folder(input_folder="input", output_folder="output", focal_length
             Bbox = det.boxes.data.cpu().detach().squeeze().numpy()
             is_right.append(det.boxes.cls.cpu().detach().squeeze().item())
             bboxes.append(Bbox[:4].tolist())
-
-        their_detections = their_detector(img_cv2, conf = 0.3, verbose=False)[0]
-        their_bboxes = []
-        their_is_right = []
-        for det in their_detections:
-            Bbox = det.boxes.data.cpu().detach().squeeze().numpy()
-            their_is_right.append(det.boxes.cls.cpu().detach().squeeze().item())
-            their_bboxes.append(Bbox[:4].tolist())
 
         if len(bboxes) == 0:
             continue
@@ -124,21 +115,21 @@ def predict_on_folder(input_folder="input", output_folder="output", focal_length
                     tmesh = renderer.vertices_to_trimesh(verts, camera_translation, LIGHT_PURPLE, is_right=is_right)
                     tmesh.export(os.path.join(args["out_folder"], f'{img_fn}_{n}.obj'))
 
-        # Render front view
-        if len(all_verts) > 0:
-            misc_args = dict(
-                mesh_base_color=LIGHT_PURPLE,
-                scene_bg_color=(1, 1, 1),
-                focal_length=scaled_focal_length,
-            )
-            cam_view = renderer.render_rgba_multiple(all_verts, cam_t=all_cam_t, render_res=img_size[n], is_right=all_right, **misc_args)
-
-            # Overlay image
-            input_img = img_cv2.astype(np.float32)[:,:,::-1]/255.0
-            input_img = np.concatenate([input_img, np.ones_like(input_img[:,:,:1])], axis=2) # Add alpha channel
-            input_img_overlay = input_img[:,:,:3] * (1-cam_view[:,:,3:]) + cam_view[:,:,:3] * cam_view[:,:,3:]
-
-            cv2.imwrite(os.path.join(args["out_folder"], f'{img_fn}.jpg'), 255*input_img_overlay[:, :, ::-1])
+        # # Render front view
+        # if len(all_verts) > 0:
+        #     misc_args = dict(
+        #         mesh_base_color=LIGHT_PURPLE,
+        #         scene_bg_color=(1, 1, 1),
+        #         focal_length=scaled_focal_length,
+        #     )
+        #     cam_view = renderer.render_rgba_multiple(all_verts, cam_t=all_cam_t, render_res=img_size[n], is_right=all_right, **misc_args)
+        #
+        #     # Overlay image
+        #     input_img = img_cv2.astype(np.float32)[:,:,::-1]/255.0
+        #     input_img = np.concatenate([input_img, np.ones_like(input_img[:,:,:1])], axis=2) # Add alpha channel
+        #     input_img_overlay = input_img[:,:,:3] * (1-cam_view[:,:,3:]) + cam_view[:,:,:3] * cam_view[:,:,3:]
+        #
+        #     cv2.imwrite(os.path.join(args["out_folder"], f'{img_fn}.jpg'), 255*input_img_overlay[:, :, ::-1])
 
 
 def project_full_img(points, cam_trans, focal_length, img_res):
@@ -153,32 +144,3 @@ def project_full_img(points, cam_trans, focal_length, img_res):
 
     V_2d = (K @ points.T).T
     return V_2d[..., :-1]
-
-# draw_bounding_box_yolo(img_cv2,[0] + list(detections.boxes.xywhn[0].detach().cpu().numpy()))
-def draw_bounding_box_yolo(image, bbox_yolo_all):
-    # Get image dimensions
-    image_height, image_width, _ = image.shape
-
-    for bbox_yolo in bbox_yolo_all:
-        # Extract class and bounding box coordinates
-        class_id = int(bbox_yolo[0])
-        bbox_x1, bbox_y1, bbox_x2, bbox_y2 = bbox_yolo
-
-        bbox_x1 = int(bbox_x1)
-        bbox_x2 = int(bbox_x2)
-        bbox_y1 = int(bbox_y1)
-        bbox_y2 = int(bbox_y2)
-
-        # Draw bounding box on the image
-        color = (0, 255, 0)  # Green color for the bounding box
-        thickness = 2
-        cv2.rectangle(image, (bbox_x1, bbox_y1), (bbox_x2, bbox_y2), color, thickness)
-
-        # Add class label to the bounding box
-        label = f"Class: {class_id}"
-        label_size, _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.9, 2)
-        cv2.rectangle(image, (bbox_x1, bbox_y1 - label_size[1] - 10),
-                    (bbox_x1 + label_size[0], bbox_y1 - 10), color, cv2.FILLED)
-        cv2.putText(image, label, (bbox_x1, bbox_y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 2)
-
-    return image

@@ -20,6 +20,9 @@ def write_into_log(msg):
 
 if __name__ == "__main__":
     for video in sorted(os.listdir(INPUT_DIR)):
+        if video[-4:] != ".mp4":
+            continue
+
         name = Path(video).stem
         print(f"Starting to process {name}")
 
@@ -53,9 +56,6 @@ if __name__ == "__main__":
             write_into_log(FINISHED_PROCESSING_MSG.format(name))
 
         print(f"Done with {name}")
-        if name in KEEP_ALL:
-            combiner.combine(os.path.join(OBJECTS_DIR, name),
-                             os.path.join(COMBINATION_DIR, name))
         os.system(f"rm -r {os.path.join(FRAMES_DIR, name)}")
         os.system(f"rm -r {os.path.join(OBJECTS_DIR, name)}")
         os.system(f"rm -r {os.path.join(MOVEMENT_DIR, name)}")

@@ -7,7 +7,7 @@ from pathlib import Path
 from time import time
 from tqdm import tqdm, trange
 
-INPUT_DIR = "/strg/E/shared-data/AIxSuture"
+INPUT_DIR = "/strg/E/shared-data/AIxSuture/videos"
 OUTPUT_DIR = "/strg/E/shared-data/AIxSuture_wilor_output"
 # INPUT_DIR = "../rps_input"
 # OUTPUT_DIR = "../rps_output"
@@ -31,4 +31,3 @@ FINISHED_PROCESSING_MSG = "Finished processing {} into motion and location\n"
 FPS = 30
 FRAME_LIMIT = None
 FOCAL_LENGTH = 16.8
-KEEP_ALL = ["A31H"]
