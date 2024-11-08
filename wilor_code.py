@@ -54,7 +54,7 @@ def predict_on_folder(input_folder="input", output_folder="output", focal_length
     # Iterate over all images in folder
     for i, img_path in enumerate(tqdm(img_paths)):
         img_cv2 = cv2.imread(str(img_path))
-        detections = detector(source=img_path,save=False, conf=0.65, device=[0], verbose=False, iou=0.1, max_det=2)[0]
+        detections = detector(source=img_path,save=False, conf=0.65, device=device, verbose=False, iou=0.1, max_det=2)[0]
         bboxes = []
         is_rights = []
         frame_confidences = [0, 0]
