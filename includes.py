@@ -6,6 +6,10 @@ import numpy as np
 from pathlib import Path
 from time import time
 from tqdm import tqdm, trange
+import torch
+import torch.multiprocessing as mp
+
+NUM_OF_PROCESSES = 5
 
 INPUT_DIR = "/strg/E/shared-data/AIxSuture/videos"
 OUTPUT_DIR = "/strg/E/shared-data/AIxSuture_wilor_output"
@@ -17,6 +21,7 @@ MOVEMENT_DIR = OUTPUT_DIR + "/movement"
 MOTION_DIR = OUTPUT_DIR + "/motion"
 LOCATION_DIR = OUTPUT_DIR + "/location"
 COMBINATION_DIR = OUTPUT_DIR + "/combined_frames"
+CONFIDENCES_DIR = OUTPUT_DIR + "/confs"
 LOGGER_PATH = "progress_log.txt"
 HAND_FACES_PATH = "hand_faces.txt"
 
